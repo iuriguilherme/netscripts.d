@@ -5,18 +5,22 @@ stack.push(origin);
 
 while(stack.length > 0) {
     node = stack.pop();
-    if (foundnodes.includes(node)) {
-        //Do nothing => "continue"
-    } else {
+    tprint("----------------------------------------");
+    if (! foundnodes.includes(node)) {
         foundnodes.push(node);
-
+        tprint("will now scan " + node);
         nextNodes = scan(node);
         for (i = 0; i < nextNodes.length; ++i) {
+            tprint("found " + nextNodes[i] + " connected to " + node + ", adding to stack");
             stack.push(nextNodes[i]);
         }
+    } else {
+        tprint(node + " has already been scanned, skipping...")
     }
 }
 
+tprint("========================================");
+tprint("full list of found machines in the network:");
 for(i = 0; i < foundnodes.length; i++) {
     tprint(foundnodes[i]);
 }
