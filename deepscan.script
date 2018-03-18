@@ -1,0 +1,22 @@
+foundnodes = [];
+stack = [];
+origin = getHostname();
+stack.push(origin);
+
+while(stack.length > 0) {
+    node = stack.pop();
+    if (foundnodes.includes(node)) {
+        //Do nothing => "continue"
+    } else {
+        foundnodes.push(node);
+
+        nextNodes = scan(node);
+        for (i = 0; i < nextNodes.length; ++i) {
+            stack.push(nextNodes[i]);
+        }
+    }
+}
+
+for(i = 0; i < foundnodes.length; i++) {
+    tprint(foundnodes[i]);
+}
