@@ -31,7 +31,7 @@ while(stack.length > 0) {
         tprint("--grow: " + getGrowTime(node) + " seconds");
         tprint("--weaken: " + getWeakenTime(node) + " seconds");
         tprint("\n");
-        tprint("RAM: " + getServerRam(node)[0] + "GB total, " + getServerRam(node)[1] + "GB used");
+        tprint("RAM: " + getServerRam(node)[0] + "GB total / " + getServerRam(node)[1] + "GB used / " + (getServerRam(node)[0]-getServerRam(node)[1]) + "GB available");
         tprint("\n");
         tprint("Server security level: " + getServerSecurityLevel(node) + " (" + getServerBaseSecurityLevel(node) + " base, " + getServerMinSecurityLevel(node) + " minimum)");
         tprint("\n");
