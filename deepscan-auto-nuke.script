@@ -1,0 +1,85 @@
+/*
+    deepscan-auto-nuke.script
+    for bitburner version: 0.35.1
+
+    winners don't use copyright
+    last version of this script should be at https://github.com/desci/netscripts.d
+
+    This script grants root access to every server in the network.
+    The only exception is the home server and the server where the script is running.
+    If you have more bought servers, this script will attempt to nuke them, unless you add them to the ownNodes variable.
+    
+    This automatic version will run forever, creating the necessary programs to ensure every server will be rooted.
+*/
+
+foundnodes = [];
+stack = [];
+origin = getHostname();
+stack.push(origin);
+
+ownNodes = [ "home", origin ];
+rootedNodesToday = 0;
+
+while (true) {
+    // Calculates current hacking resources
+    rootingPrograms = 0;
+    if (fileExists("BruteSSH.exe", "home")) {
+        rootingPrograms++;
+        if (fileExists("FTPCrack.exe", "home")) {
+            rootingPrograms++;
+            if (fileExists("relaySMTP.exe", "home")) {
+                rootingPrograms++;
+                if (fileExists("HTTPWorm.exe", "home")) {
+                    rootingPrograms++;
+                    if (fileExists("SQLInject.exe", "home")) {
+                        rootingPrograms++;
+                    } else createProgram("SQLInject.exe");
+                } else createProgram("HTTPWorm.exe");
+            } else createProgram("relaySMTP.exe");
+        } else createProgram("FTPCrack.exe");
+    } else createProgram("BruteSSH.exe");
+    
+    while(stack.length > 0) {
+        node = stack.pop();
+        if (! foundnodes.includes(node)) {
+            tprint("----------------------------------------");
+            tprint("Working on " + node + "...");
+    
+            // We will only nuke the server if the necessary conditions are met
+            if (! ownNodes.includes(node) && ! hasRootAccess(node) && getServerSecurityLevel(node) <= getHackingLevel() && getServerNumPortsRequired(node) <= rootingPrograms) {
+                tprint("Attempting to nuke " + node + "...");
+                //TODO change to switch case when netscript supports it
+                if (getServerNumPortsRequired(node) > 0) {
+                    brutessh(node);
+                    if (getServerNumPortsRequired(node) > 1) {
+                        ftpcrack(node);
+                        if (getServerNumPortsRequired(node) > 2) {
+                            relaysmtp(node);
+                            if (getServerNumPortsRequired(node) > 3) {
+                                httpworm(node);
+                                if (getServerNumPortsRequired(node) > 4) {
+                                    sqlinject(node);
+                                }
+                            }
+                        }
+                    }
+                }
+                nuke(node);
+                if (hasRootAccess(node)) {
+                    tprint(node + " successfully rooted!");
+                    rootedNodesToday++;
+                }
+            } else {
+                tprint(node + " can't or won't be rooted today");
+            }
+    
+            foundnodes.push(node);
+            nextNodes = scan(node);
+            for (i = 0; i < nextNodes.length; ++i) {
+                stack.push(nextNodes[i]);
+            }
+        }
+    }
+    tprint("========================================");
+    tprint("Rooted servers so far: " + rootedNodesToday);
+}
