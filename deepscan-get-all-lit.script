@@ -1,0 +1,45 @@
+/*
+    deepscan-get-all-lit.script
+    for bitburner version: 0.35.1
+
+    winners don't use copyright
+    last version of this script should be at https://github.com/desci/netscripts.d
+
+    This script scans the whole network and download to the home server any '.lit' file.
+    It only downloads files on already rooted servers.
+*/
+
+foundnodes = [];
+stack = [];
+origin = getHostname();
+stack.push(origin);
+
+target = "home";
+// Uncomment the next line to send the files to the current server instead of home
+//target = origin;
+
+while(stack.length > 0) {
+    node = stack.pop();
+
+    if (! foundnodes.includes(node)) {
+        foundnodes.push(node);
+
+        if (node != target) {
+            if (hasRootAccess(node)) {
+                tprint("Downloading all .lit files from " + node + " to " + target + "...");
+                files = ls(node);
+                for (i = 0; i < files.length; ++i) {
+                    if (files[i].endsWith(".lit")) {
+                        tprint("Copying " + files[i] + " to " + target);
+                        scp(files[i], node, target);
+                    }
+                }
+            } else print(node + " is not rooted, skipping...");
+        }
+
+        nextNodes = scan(node);
+        for (i = 0; i < nextNodes.length; ++i) {
+            stack.push(nextNodes[i]);
+        }
+    } else print(node + " already scanned, skipping...");
+}
