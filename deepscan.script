@@ -11,7 +11,7 @@ while(stack.length > 0) {
         tprint("will now scan " + node);
         nextNodes = scan(node);
         for (i = 0; i < nextNodes.length; ++i) {
-            tprint("found " + nextNodes[i] + " connected to " + node + ", adding to stack");
+            tprint("--found " + nextNodes[i] + " connected to " + node + ", adding to stack");
             stack.push(nextNodes[i]);
         }
     } else {
