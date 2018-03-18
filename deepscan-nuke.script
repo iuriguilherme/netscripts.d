@@ -26,7 +26,7 @@ if (fileExists("BruteSSH.exe", "home")) {
         rootingPrograms++;
         if (fileExists("relaySMTP.exe", "home")) {
             rootingPrograms++;
-            if (fileExists("HTTPworm.exe", "home")) {
+            if (fileExists("HTTPWorm.exe", "home")) {
                 rootingPrograms++;
                 if (fileExists("SQLInject.exe", "home")) {
                     rootingPrograms++;
