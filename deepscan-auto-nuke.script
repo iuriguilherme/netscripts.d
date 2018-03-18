@@ -22,29 +22,40 @@ rootedNodesToday = 0;
 
 while (true) {
     // Calculates current hacking resources
+    // And create conditions where possible
     rootingPrograms = 0;
     if (fileExists("BruteSSH.exe", "home")) {
         rootingPrograms++;
-        if (fileExists("FTPCrack.exe", "home")) {
-            rootingPrograms++;
-            if (fileExists("relaySMTP.exe", "home")) {
-                rootingPrograms++;
-                if (fileExists("HTTPWorm.exe", "home")) {
-                    rootingPrograms++;
-                    if (fileExists("SQLInject.exe", "home")) {
-                        rootingPrograms++;
-                    } else createProgram("SQLInject.exe");
-                } else createProgram("HTTPWorm.exe");
-            } else createProgram("relaySMTP.exe");
-        } else createProgram("FTPCrack.exe");
-    } else createProgram("BruteSSH.exe");
+    } else if (createProgram("BruteSSH.exe")) {
+        rootingPrograms++;
+    }
+    if (fileExists("FTPCrack.exe", "home")) {
+        rootingPrograms++;
+    } else if (createProgram("FTPCrack.exe")) {
+        rootingPrograms++;
+    }
+    if (fileExists("relaySMTP.exe", "home")) {
+        rootingPrograms++;
+    } else if (createProgram("relaySMTP.exe")) {
+        rootingPrograms++;
+    }
+    if (fileExists("HTTPWorm.exe", "home")) {
+        rootingPrograms++;
+    } else if (createProgram("HTTPWorm.exe")) {
+        rootingPrograms++;
+    }
+    if (fileExists("SQLInject.exe", "home")) {
+        rootingPrograms++;
+    } else if (createProgram("SQLInject.exe")) {
+        rootingPrograms++;
+    }
     
     while(stack.length > 0) {
         node = stack.pop();
         if (! foundnodes.includes(node)) {
             tprint("----------------------------------------");
             tprint("Working on " + node + "...");
-    
+            
             // We will only nuke the server if the necessary conditions are met
             if (! ownNodes.includes(node) && ! hasRootAccess(node) && getServerSecurityLevel(node) <= getHackingLevel() && getServerNumPortsRequired(node) <= rootingPrograms) {
                 tprint("Attempting to nuke " + node + "...");
@@ -72,7 +83,7 @@ while (true) {
             } else {
                 tprint(node + " can't or won't be rooted today");
             }
-    
+            
             foundnodes.push(node);
             nextNodes = scan(node);
             for (i = 0; i < nextNodes.length; ++i) {
