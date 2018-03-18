@@ -1,3 +1,14 @@
+/*
+    deepscan.script
+    for bitburner version: 0.35.1
+
+    winners don't use copyright
+    last version of this script should be at https://github.com/desci/netscripts.d
+
+    This script scans recursively all the network.
+    This is based on the code examples at the wiki: http://bitburner.wikia.com/wiki/Code_Examples#Get_all_servers_on_the_network
+*/
+
 foundnodes = [];
 stack = [];
 origin = getHostname();
