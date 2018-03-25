@@ -12,15 +12,15 @@
     This automatic version will run forever, creating the necessary programs to ensure every server will be rooted.
 */
 
-foundnodes = [];
-stack = [];
 origin = getHostname();
-stack.push(origin);
 
 ownNodes = [ "home", origin ];
 rootedNodesToday = 0;
 
 while (true) {
+    foundnodes = [];
+    stack = [];
+    stack.push(origin);
     // Calculates current hacking resources
     // And create conditions where possible
     rootingPrograms = 0;
@@ -94,3 +94,4 @@ while (true) {
     tprint("========================================");
     tprint("Rooted servers so far: " + rootedNodesToday);
 }
+
