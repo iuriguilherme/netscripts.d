@@ -17,18 +17,18 @@ if (hacknetnodes.length === null) purchaseHacknetNode();
 while (true) {
     while (getServerMoneyAvailable("home") >= reserveMoney) {
         for (i = 0; i < hacknetnodes.length; i++) {
-            if (hacknetnodes[i].level < 200) {
-                hacknetnodes[i].upgradeLevel(1);
+            while (hacknetnodes[i].level < 200 && hacknetnodes[i].upgradeLevel(1)) {
+                print("Upgraded " + hacknetnodes[i].name + " to level " + hacknetnodes[i].level);
             }
-            if (hacknetnodes[i].ram < 64) {
-                hacknetnodes[i].upgradeRam();
+            while (hacknetnodes[i].ram < 64 && hacknetnodes[i].upgradeRam()) {
+                print("Upgraded " + hacknetnodes[i].name + " RAM to " + hacknetnodes[i].ram);
             }
-            if (hacknetnodes[i].cores < 16) {
-                hacknetnodes[i].upgradeCore();
+            while (hacknetnodes[i].cores < 16 && hacknetnodes[i].upgradeCore()) {
+                print("Upgraded " + hacknetnodes[i].name + " core to " + hacknetnodes[i].core);
             }
         }
         // Buy next hacknetnode if the last one is already fully updated
-        if (hacknetnodes[(hacknetnodes.length - 1)].level == 200 && hacknetnodes[(hacknetnodes.length - 1)].ram == 64 && hacknetnodes[(hacknetnodes.length - 1)].core == 16) purchaseHacknetNode();
+        if (hacknetnodes[(hacknetnodes.length - 1)].level == 200 && hacknetnodes[(hacknetnodes.length - 1)].ram == 64 && hacknetnodes[(hacknetnodes.length - 1)].cores == 16) purchaseHacknetNode();
     }
 }
 
