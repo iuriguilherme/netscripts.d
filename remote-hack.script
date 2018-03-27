@@ -1,0 +1,22 @@
+/*
+    remote-hack.script
+    for bitburner version: 0.35.1
+
+    winners don't use copyright
+    last version of this script should be at https://github.com/desci/netscripts.d
+
+    This script will automatically hack the current server
+    It is supposed to be copied over to the server which is to be hacked. It won't work on a server that has 2GB of RAM or less.
+*/
+
+whoami = getHostname();
+while (whoami != "home") {
+    hack(whoami);
+    grow(whoami);
+    grow(whoami);
+    weaken(whoami);
+    weaken(whoami);
+    weaken(whoami);
+    weaken(whoami);
+}
+

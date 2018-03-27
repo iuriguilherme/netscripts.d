@@ -83,7 +83,7 @@ while (true) {
                     tprint(node + " won't be rooted today because it is already rooted");
                 }
             } else {
-                tprint(node + " won't be rooted today because it is included in ownNodes");
+                tprint(node + " won't be rooted today because it is included in ourNodes");
             }
             
             tprint("adding " + node + " to foundnodes...");

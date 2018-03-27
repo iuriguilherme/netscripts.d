@@ -1,0 +1,34 @@
+/*
+    hacknet-auto.script
+    for bitburner version: 0.35.1
+
+    winners don't use copyright
+    last version of this script should be at https://github.com/desci/netscripts.d
+
+    This script will buy a hacknetnode, fully upgrade it and then buy the next one in an infinite loop.
+    There is an option to set the budget limit.
+*/
+
+// We will not buy anything if there's less money than this ammount
+reserveMoney = 0;
+
+if (hacknetnodes.length === null) purchaseHacknetNode();
+
+while (true) {
+    while (getServerMoneyAvailable("home") >= reserveMoney) {
+        for (i = 0; i < hacknetnodes.length; i++) {
+            if (hacknetnodes[i].level < 200) {
+                hacknetnodes[i].upgradeLevel(1);
+            }
+            if (hacknetnodes[i].ram < 64) {
+                hacknetnodes[i].upgradeRam();
+            }
+            if (hacknetnodes[i].cores < 16) {
+                hacknetnodes[i].upgradeCore();
+            }
+        }
+        // Buy next hacknetnode if the last one is already fully updated
+        if (hacknetnodes[(hacknetnodes.length - 1)].level == 200 && hacknetnodes[(hacknetnodes.length - 1)].ram == 64 && hacknetnodes[(hacknetnodes.length - 1)].core == 16) purchaseHacknetNode();
+    }
+}
+
