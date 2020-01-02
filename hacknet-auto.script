@@ -1,34 +1,40 @@
 /*
-    hacknet-auto.script
-    for bitburner version: 0.35.1
-
+    hacknet-auto.script (NetScript 1.0)
+    for bitburner version: 0.47.2
     winners don't use copyright
-    last version of this script should be at https://github.com/desci/netscripts.d
+
+    last version of this script should be at https://github.com/iuriguilherme/netscripts.d
+    BitBurner should be at https://github.com/danielyxie/bitburner
 
     This script will buy a hacknetnode, fully upgrade it and then buy the next one in an infinite loop.
     There is an option to set the budget limit.
 */
 
 // We will not buy anything if there's less money than this ammount
-reserveMoney = 0;
+reserveMoney = 1000;
+// Number of times to upgrade
+n = 1;
 
-if (hacknetnodes.length === null) purchaseHacknetNode();
+disableLog("getServerMoneyAvailable");
 
-while (true) {
+// Buy first HacknetNode if there are none
+if (hacknet.numNodes() === null && getServerMoneyAvailable("home") >= reserveMoney) hacknet.purchaseNode();
+
+while (hacknet.numNodes() !== null) {
     while (getServerMoneyAvailable("home") >= reserveMoney) {
-        for (i = 0; i < hacknetnodes.length; i++) {
-            while (hacknetnodes[i].level < 200 && hacknetnodes[i].upgradeLevel(1)) {
-                print("Upgraded " + hacknetnodes[i].name + " to level " + hacknetnodes[i].level);
+        for (i = 0; i < hacknet.numNodes(); i++) {
+            while (hacknet.getLevelUpgradeCost(i, n) < Infinity && hacknet.upgradeLevel(i, n)) {
+                print("Upgraded " + hacknet.getNodeStats(i).name + " to level " + hacknet.getNodeStats(i).level);
             }
-            while (hacknetnodes[i].ram < 64 && hacknetnodes[i].upgradeRam()) {
-                print("Upgraded " + hacknetnodes[i].name + " RAM to " + hacknetnodes[i].ram);
+            while (hacknet.getRamUpgradeCost(i, n) < Infinity && hacknet.upgradeRam(i, n)) {
+                print("Upgraded " + hacknet.getNodeStats(i).name + " RAM to " + hacknet.getNodeStats(i).ram);
             }
-            while (hacknetnodes[i].cores < 16 && hacknetnodes[i].upgradeCore()) {
-                print("Upgraded " + hacknetnodes[i].name + " core to " + hacknetnodes[i].core);
+            while (hacknet.getCoreUpgradeCost(i, n) < Infinity && hacknet.upgradeCore(i, n)) {
+                print("Upgraded " + hacknet.getNodeStats(i).name + " core to " + hacknet.getNodeStats(i).core);
             }
         }
-        // Buy next hacknetnode if the last one is already fully updated
-        if (hacknetnodes[(hacknetnodes.length - 1)].level == 200 && hacknetnodes[(hacknetnodes.length - 1)].ram == 64 && hacknetnodes[(hacknetnodes.length - 1)].cores == 16) purchaseHacknetNode();
+        // Buy next HacknetNode if the last one is already fully updated
+        // If for some reason the last HacknetNode is fully updated and the others don't, the loop above will still attempt to upgrade them.
+        if (hacknet.getLevelUpgradeCost((hacknet.numNodes() - 1), n) === Infinity && hacknet.getRamUpgradeCost((hacknet.numNodes() - 1), n) === Infinity && hacknet.getCoreUpgradeCost((hacknet.numNodes() - 1), n) === Infinity) hacknet.purchaseNode();
     }
 }
-
