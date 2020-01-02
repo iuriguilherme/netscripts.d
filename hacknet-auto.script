@@ -23,15 +23,9 @@ if (hacknet.numNodes() === null && getServerMoneyAvailable("home") >= reserveMon
 while (hacknet.numNodes() !== null) {
     while (getServerMoneyAvailable("home") >= reserveMoney) {
         for (i = 0; i < hacknet.numNodes(); i++) {
-            while (hacknet.getLevelUpgradeCost(i, n) < Infinity && hacknet.upgradeLevel(i, n)) {
-                print("Upgraded " + hacknet.getNodeStats(i).name + " to level " + hacknet.getNodeStats(i).level);
-            }
-            while (hacknet.getRamUpgradeCost(i, n) < Infinity && hacknet.upgradeRam(i, n)) {
-                print("Upgraded " + hacknet.getNodeStats(i).name + " RAM to " + hacknet.getNodeStats(i).ram);
-            }
-            while (hacknet.getCoreUpgradeCost(i, n) < Infinity && hacknet.upgradeCore(i, n)) {
-                print("Upgraded " + hacknet.getNodeStats(i).name + " core to " + hacknet.getNodeStats(i).core);
-            }
+            while (hacknet.getLevelUpgradeCost(i, n) < Infinity && hacknet.upgradeLevel(i, n)) print("Upgraded " + hacknet.getNodeStats(i).name + " to level " + hacknet.getNodeStats(i).level);
+            while (hacknet.getRamUpgradeCost(i, n) < Infinity && hacknet.upgradeRam(i, n)) print("Upgraded " + hacknet.getNodeStats(i).name + " RAM to " + hacknet.getNodeStats(i).ram);
+            while (hacknet.getCoreUpgradeCost(i, n) < Infinity && hacknet.upgradeCore(i, n)) print("Upgraded " + hacknet.getNodeStats(i).name + " core to " + hacknet.getNodeStats(i).core);
         }
         // Buy next HacknetNode if the last one is already fully updated
         // If for some reason the last HacknetNode is fully updated and the others don't, the loop above will still attempt to upgrade them.
