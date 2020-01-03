@@ -18,9 +18,9 @@ n = 1;
 disableLog("getServerMoneyAvailable");
 
 // Buy first HacknetNode if there are none
-if (hacknet.numNodes() === null && getServerMoneyAvailable("home") >= reserveMoney) hacknet.purchaseNode();
+if (hacknet.numNodes() === 0 && getServerMoneyAvailable("home") >= reserveMoney) hacknet.purchaseNode();
 
-while (hacknet.numNodes() !== null) {
+while (hacknet.numNodes() > 0) {
     while (getServerMoneyAvailable("home") >= reserveMoney) {
         for (i = 0; i < hacknet.numNodes(); i++) {
             while (hacknet.getLevelUpgradeCost(i, n) < Infinity && hacknet.upgradeLevel(i, n)) print("Upgraded " + hacknet.getNodeStats(i).name + " to level " + hacknet.getNodeStats(i).level);
