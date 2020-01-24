@@ -1,0 +1,102 @@
+/*
+    deepscan-hack.script for Bitburner v0.47.2
+    Winners don't use copyright
+    
+    Latest version of this script should be at
+        https://github.com/iuriguilherme/netscripts.d
+    Bitburner should be at https://github.com/danielyxie/bitburner
+    
+    This script requires 4.05 GB of RAM to run for 1 thread(s)
+    
+    This script automatically hacks every hackable server in the 
+    network. It will not attempt to root servers, they should be 
+    already root by other scripts.
+    It will search for rooted servers and upload a hacking script
+    (make sure you have the "remote-hack.script" on your home server).
+*/
+
+whoami = getHostname();
+hackedServers = [];
+
+// Add your own servers here or they will be HACKED.
+myServers = [
+    whoami,
+    "home"
+];
+
+while (true) {
+    allServers = [];
+    servers = [];
+    // This can't be empty in the first loop, so we start where we are
+    //  running the script
+    servers.push(whoami);
+
+    while (servers.length > 0) {
+        server = servers.pop();
+        if (!hackedServers.includes(server)) {
+            print("--------------------------------" +
+                "-------------------------------");
+            print("Working on " + server + "...");
+
+            // We will only hack the server if the necessary conditions 
+            // are met
+            willHack = 0;
+            reasons = [];
+            if (!myServers.includes(server)) {
+                willHack++;
+                reasons.push("it is included in the 'myServers' list");
+            }
+            if (hasRootAccess(server)) {
+                willHack++;
+                reasons.push("we don't have root access on it");
+            }
+            if (
+                getServerRequiredHackingLevel(server) >
+                getHackingLevel()
+            ) {
+                willHack++;
+                reasons.push("our hacking level is too low");
+            }
+            if (willHack > 0) {
+                print(
+                    server +
+                    " won't be hacked right now because " +
+                    reasons.join(', ') +
+                    "."
+                );
+            } else {
+                print("Sending hacking script to " + server + "...");
+                if (scp("remote-hack.script", "home", server)) {
+                    print(
+                        "Scripts sent to " +
+                        server +
+                        ", attempting to execute it..."
+                    );
+                    if (
+                        isRunning("remote-hack.script", server) ||
+                        exec("remote-hack.script", server)
+                    ) {
+                        tprint(server + " successfully hacked!");
+                        if (!hackedServers.includes(server)) {
+                            hackedServers.push(server);
+                        }
+                    } else {
+                        tprint("Script failed to execute at " + server);
+                    }
+                } else {
+                    tprint("Failed uploading script to " + server);
+                }
+            }
+
+            allServers.push(server);
+            nextServers = scan(server);
+            for (i = 0; i < nextServers.length; ++i) {
+                servers.push(nextServers[i]);
+            }
+        }
+    }
+    tprint("================================" +
+        "===============================");
+    print("Hacked servers so far: " + hackedServers.length);
+    print("Starting a new loop...");
+}

@@ -1,83 +1,150 @@
 /*
-    deepscan-nuke.script
-    for bitburner version: 0.35.1
-
-    winners don't use copyright
-    last version of this script should be at https://github.com/desci/netscripts.d
-
-    This script grants root access to every server in the network.
-    The only exception is the home server and the server where the script is running.
-    If you have more bought servers, this script will attempt to nuke them, unless you add them to the ownNodes variable.
+    deepscan-nuke.script for Bitburner v0.47.2
+    Winners don't use copyright
+    
+    Latest version of this script should be at
+        https://github.com/iuriguilherme/netscripts.d
+    Bitburner should be at https://github.com/danielyxie/bitburner
+    
+    This script requires 2.55 GB of RAM to run for 1 thread(s)
+    
+    This script grants root access to every scannable server in the 
+    network. The only exception is the home server and the server where 
+    the script is running.
+    WARNING: If you have more bought servers, this script will attempt 
+    to nuke them, unless you add them to the myServers variable.
 */
 
-foundnodes = [];
-stack = [];
-origin = getHostname();
-stack.push(origin);
+whoami = getHostname();
+nukedServers = [];
 
-ownNodes = [ "home", origin ];
-rootedNodesToday = 0;
+// Add your own servers here or they will be NUKED.
+myServers = [
+    whoami,
+    "home"
+];
 
-// Calculates current hacking resources
-rootingPrograms = 0;
-if (fileExists("BruteSSH.exe", "home")) {
-    rootingPrograms++;
-    if (fileExists("FTPCrack.exe", "home")) {
+while (true) {
+    allServers = [];
+    servers = [];
+    // This can't be empty in the first loop, so we start where we are
+    //  running the script
+    servers.push(whoami);
+
+    // Calculates current hacking resources
+    // This is done inside the loop so it gets updated whenever a new 
+    //  program is created
+    rootingPrograms = 0;
+    if (fileExists("BruteSSH.exe", "home")) {
         rootingPrograms++;
-        if (fileExists("relaySMTP.exe", "home")) {
+        if (fileExists("FTPCrack.exe", "home")) {
             rootingPrograms++;
-            if (fileExists("HTTPWorm.exe", "home")) {
+            if (fileExists("relaySMTP.exe", "home")) {
                 rootingPrograms++;
-                if (fileExists("SQLInject.exe", "home")) {
+                if (fileExists("HTTPWorm.exe", "home")) {
                     rootingPrograms++;
+                    if (fileExists("SQLInject.exe", "home")) {
+                        rootingPrograms++;
+                    }
                 }
             }
         }
     }
-}
 
-while(stack.length > 0) {
-    node = stack.pop();
-    if (! foundnodes.includes(node)) {
-        tprint("----------------------------------------");
-        tprint("Working on " + node + "...");
+    while (servers.length > 0) {
+        server = servers.pop();
+        if (!nukedServers.includes(server)) {
+            print("----------------------------------------");
+            print("Working on " + server + "...");
 
-        // We will only nuke the server if the necessary conditions are met
-        if (! ownNodes.includes(node) && ! hasRootAccess(node) && getServerSecurityLevel(node) <= getHackingLevel() && getServerNumPortsRequired(node) <= rootingPrograms) {
-            tprint("Attempting to nuke " + node + "...");
-            //TODO change to switch case when netscript supports it
-            if (getServerNumPortsRequired(node) > 0) {
-                brutessh(node);
-                if (getServerNumPortsRequired(node) > 1) {
-                    ftpcrack(node);
-                    if (getServerNumPortsRequired(node) > 2) {
-                        relaysmtp(node);
-                        if (getServerNumPortsRequired(node) > 3) {
-                            httpworm(node);
-                            if (getServerNumPortsRequired(node) > 4) {
-                                sqlinject(node);
+            // We will only nuke the server if the necessary conditions 
+            //  are met
+            willNuke = 0;
+            willHack = 0;
+            reasons = [];
+            if (!myServers.includes(server)) {
+                willNuke++;
+                reasons.push("it is included in the 'myServers' list");
+            }
+            if (!hasRootAccess(server)) {
+                willNuke++;
+                reasons.push("we already have root access on it");
+            }
+            if (
+                getServerSecurityLevel(server) <
+                getHackingLevel()
+            ) {
+                willNuke++;
+                reasons.push("our hacking level is too low");
+            }
+            if (
+                getServerNumPortsRequired(server) >
+                rootingPrograms
+            ) {
+                willNuke++;
+                reasons.push("we don't have enough programs");
+            }
+            if (willNuke > 0) {
+                print(
+                    server +
+                    " can't or won't be nuked right now" +
+                    reasons.join(', ') +
+                    "."
+                );
+            } else {
+                print("Attempting to nuke " + server + "...");
+                if (getServerNumPortsRequired(server) > 0) {
+                    brutessh(server);
+                    if (
+                        getServerNumPortsRequired(server) >
+                        1
+                    ) {
+                        ftpcrack(server);
+                        if (
+                            getServerNumPortsRequired(
+                                server
+                            ) >
+                            2
+                        ) {
+                            relaysmtp(server);
+                            if (
+                                getServerNumPortsRequired(
+                                    server
+                                ) >
+                                3
+                            ) {
+                                httpworm(server);
+                                if (
+                                    getServerNumPortsRequired(
+                                        server
+                                    ) >
+                                    4
+                                ) {
+                                    sqlinject(server);
+                                }
                             }
                         }
                     }
                 }
+                nuke(server);
+                if (hasRootAccess(server)) {
+                    print(server + " successfully rooted!");
+                    if (!nukedServers.includes(server)) {
+                        nukedServers.push(server);
+                    }
+                } else {
+                    print(server + " NOT rooted!");
+                }
             }
-            nuke(node);
-            if (hasRootAccess(node)) {
-                tprint(node + " successfully rooted!");
-                rootedNodesToday++;
-            }
-        } else {
-            tprint(node + " can't or won't be rooted today");
-        }
 
-        foundnodes.push(node);
-        nextNodes = scan(node);
-        for (i = 0; i < nextNodes.length; ++i) {
-            stack.push(nextNodes[i]);
+            allServers.push(server);
+            nextServers = scan(server);
+            for (i = 0; i < nextServers.length; ++i) {
+                servers.push(nextServers[i]);
+            }
         }
     }
+    print("========================================");
+    print("Rooted servers so far: " + nukedServers.length);
+    print("Starting a new loop...");
 }
-
-tprint("========================================");
-tprint("Rooted servers today: " + rootedNodesToday);
-

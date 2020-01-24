@@ -1,22 +1,69 @@
 /*
-    remote-hack.script
-    for bitburner version: 0.35.1
+    remote-hack.script for Bitburner v0.47.2
+    Winners don't use copyright
+    
+    Latest version of this script should be at
+        https://github.com/iuriguilherme/netscripts.d
+    Bitburner should be at https://github.com/danielyxie/bitburner
+    
+    This script requires 2.55 GB of RAM to run for 1 thread(s)
 
-    winners don't use copyright
-    last version of this script should be at https://github.com/desci/netscripts.d
-
-    This script will automatically hack the current server
-    It is supposed to be copied over to the server which is to be hacked. It won't work on a server that has 2GB of RAM or less.
+    This script will automatically hack the current server, unless it 
+    is the home server or it is at the mySerers list.
+    It is supposed to be copied over to the server which is to be 
+    hacked. It won't work on a server that has 2GB of RAM or less.
 */
 
-whoami = getHostname();
-while (whoami != "home") {
-    hack(whoami);
-    grow(whoami);
-    grow(whoami);
-    weaken(whoami);
-    weaken(whoami);
-    weaken(whoami);
-    weaken(whoami);
+// Add the servers you want to avoid being hacked here.
+// WARNING: You were warned.
+myServers = [
+    "home"
+];
+
+// Set the percentage of the grow() command via the first argument
+percentage = 25;
+if (args.length > 0) {
+    if (args[0] <= 100) {
+        percentage = args[0];
+    }
 }
 
+server = getHostname();
+
+// Pass another server's name or address as the second argument to hack 
+// that one instead of the current server. This is useful for your own 
+// servers.
+if (args.length > 1) {
+    if (serverExists(args[1])) {
+        server = args[1];
+    }
+}
+
+while (!myServers.includes(server)) {
+    weakenAll(server);
+    growAll(server, percentage);
+    hack(server);
+}
+
+function weakenAll(server) {
+    while (
+        getServerSecurityLevel(server) >
+        getServerMinSecurityLevel(server)
+    ) {
+        while (!weaken(server));
+    }
+}
+
+function growAll(server, percentage) {
+    // percentage value, can't be higher than 100
+    if (percentage > 100) percentage = 100;
+    while (
+        getServerMoneyAvailable(server) <
+        (
+            (percentage / 100) *
+            getServerMaxMoney(server)
+        )
+    ) {
+        while (!grow(server));
+    }
+}
