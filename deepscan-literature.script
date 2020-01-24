@@ -1,0 +1,66 @@
+/*
+    deepscan-literature.script for Bitburner v0.47.2
+    Winners don't use copyright
+    
+    Latest version of this script should be at
+        https://github.com/iuriguilherme/netscripts.d
+    Bitburner should be at https://github.com/danielyxie/bitburner
+    
+    This script requires 2.70 GB of RAM to run for 1 thread(s)
+
+    This script scans the whole network and download to the home server 
+    any '.lit' files. It only downloads files on already rooted servers.
+    This script will only run once. You have to manually run it again 
+    to check for more available literature.
+*/
+
+target = getHostname();
+
+filesDownloaded = 0;
+filesDownloaded = 0;
+foundServers = [];
+servers = [];
+servers.push(target);
+
+while (servers.length > 0) {
+    server = servers.pop();
+    if (!foundServers.includes(server)) {
+        tprint("--------------------------------" +
+            "-------------------------------");
+        foundServers.push(server);
+        tprint("Will now scan " + server);
+        if (server != target && hasRootAccess(server)) {
+            tprint(
+                "Downloading all .lit files from " +
+                server +
+                " to " +
+                target +
+                "..."
+            );
+            files = ls(server);
+            for (i = 0; i < files.length; ++i) {
+                if (files[i].endsWith(".lit")) {
+                    tprint(
+                        "Copying " +
+                        files[i] +
+                        " to " +
+                        target +
+                        "..."
+                    );
+                    scp(files[i], server, target);
+                }
+            }
+        } else tprint(server + " is not rooted, skipping...");
+
+        nextServers = scan(server);
+        for (i = 0; i < nextServers.length; ++i) {
+            if (!foundServers.includes(nextServers[i])) {
+                servers.push(nextServers[i]);
+            }
+        }
+    }
+}
+
+tprint("================================" +
+    "===============================");
+tprint(filesDownloaded + " files downloaded today!");

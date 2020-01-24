@@ -13,37 +13,37 @@
     network, but you may use this script as a base to do other things.
 */
 
-foundNodes = [];
-stack = [];
+foundServers = [];
+servers = [];
 whoami = getHostname();
-stack.push(whoami);
+servers.push(whoami);
 
-while (stack.length > 0) {
-    node = stack.pop();
-    if (!foundNodes.includes(node)) {
+while (servers.length > 0) {
+    server = servers.pop();
+    if (!foundServers.includes(server)) {
         tprint("--------------------------------" +
             "-------------------------------");
-        foundNodes.push(node);
-        tprint("Will now scan " + node);
-        nextNodes = scan(node);
-        for (i = 0; i < nextNodes.length; ++i) {
-            if (!foundNodes.includes(nextNodes[i])) {
+        foundServers.push(server);
+        tprint("Will now scan " + server);
+        nextServers = scan(server);
+        for (i = 0; i < nextServers.length; ++i) {
+            if (!foundServers.includes(nextServers[i])) {
                 tprint(
                     "++found " +
-                    nextNodes[i] +
+                    nextServers[i] +
                     " connected to " +
-                    node +
-                    ", adding to stack"
+                    server +
+                    ", adding to servers"
                 );
-                stack.push(nextNodes[i]);
+                servers.push(nextServers[i]);
             } else {
                 tprint(
                     "--found " +
-                    nextNodes[i] +
+                    nextServers[i] +
                     " connected to " +
-                    node +
-                    ", but it's already on foundNodes" +
-                    ", not adding to stack."
+                    server +
+                    ", but it's already on foundServers" +
+                    ", not adding to servers."
                 );
             }
         }
@@ -52,7 +52,7 @@ while (stack.length > 0) {
 
 tprint("================================" +
     "===============================");
-tprint("Full list of machines found in the network:");
-for (i = 0; i < foundNodes.length; i++) {
-    tprint(foundNodes[i]);
-}
+tprint(
+    "Full list of servers found in the network:" +
+    foundServers.join(', ')
+);

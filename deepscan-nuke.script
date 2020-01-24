@@ -140,7 +140,9 @@ while (true) {
             allServers.push(server);
             nextServers = scan(server);
             for (i = 0; i < nextServers.length; ++i) {
-                servers.push(nextServers[i]);
+                if (!foundServers.includes(nextServers[i])) {
+                    servers.push(nextServers[i]);
+                }
             }
         }
     }
