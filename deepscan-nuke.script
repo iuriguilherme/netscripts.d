@@ -54,7 +54,8 @@ while (true) {
     while (servers.length > 0) {
         server = servers.pop();
         if (!nukedServers.includes(server)) {
-            print("----------------------------------------");
+            print("--------------------------------" +
+                "-------------------------------");
             print("Working on " + server + "...");
 
             // We will only nuke the server if the necessary conditions 
@@ -62,16 +63,16 @@ while (true) {
             willNuke = 0;
             willHack = 0;
             reasons = [];
-            if (!myServers.includes(server)) {
+            if (myServers.includes(server)) {
                 willNuke++;
                 reasons.push("it is included in the 'myServers' list");
             }
-            if (!hasRootAccess(server)) {
+            if (hasRootAccess(server)) {
                 willNuke++;
                 reasons.push("we already have root access on it");
             }
             if (
-                getServerSecurityLevel(server) <
+                getServerSecurityLevel(server) >
                 getHackingLevel()
             ) {
                 willNuke++;
@@ -87,8 +88,8 @@ while (true) {
             if (willNuke > 0) {
                 print(
                     server +
-                    " can't or won't be nuked right now" +
-                    reasons.join(', ') +
+                    " can't or won't be nuked right now because " +
+                    reasons.join(', and ') +
                     "."
                 );
             } else {
@@ -140,13 +141,14 @@ while (true) {
             allServers.push(server);
             nextServers = scan(server);
             for (i = 0; i < nextServers.length; ++i) {
-                if (!foundServers.includes(nextServers[i])) {
+                if (!allServers.includes(nextServers[i])) {
                     servers.push(nextServers[i]);
                 }
             }
         }
     }
-    print("========================================");
+    print("================================" +
+        "===============================");
     print("Rooted servers so far: " + nukedServers.length);
     print("Starting a new loop...");
 }

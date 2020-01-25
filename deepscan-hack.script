@@ -42,11 +42,11 @@ while (true) {
             // are met
             willHack = 0;
             reasons = [];
-            if (!myServers.includes(server)) {
+            if (myServers.includes(server)) {
                 willHack++;
                 reasons.push("it is included in the 'myServers' list");
             }
-            if (hasRootAccess(server)) {
+            if (!hasRootAccess(server)) {
                 willHack++;
                 reasons.push("we don't have root access on it");
             }
@@ -61,7 +61,7 @@ while (true) {
                 print(
                     server +
                     " won't be hacked right now because " +
-                    reasons.join(', ') +
+                    reasons.join(', and ') +
                     "."
                 );
             } else {
@@ -76,28 +76,28 @@ while (true) {
                         isRunning("remote-hack.script", server) ||
                         exec("remote-hack.script", server)
                     ) {
-                        tprint(server + " successfully hacked!");
+                        print(server + " successfully hacked!");
                         if (!hackedServers.includes(server)) {
                             hackedServers.push(server);
                         }
                     } else {
-                        tprint("Script failed to execute at " + server);
+                        print("Script failed to execute at " + server);
                     }
                 } else {
-                    tprint("Failed uploading script to " + server);
+                    print("Failed uploading script to " + server);
                 }
             }
 
             allServers.push(server);
             nextServers = scan(server);
             for (i = 0; i < nextServers.length; ++i) {
-                if (!foundServers.includes(nextServers[i])) {
+                if (!allServers.includes(nextServers[i])) {
                     servers.push(nextServers[i]);
                 }
             }
         }
     }
-    tprint("================================" +
+    print("================================" +
         "===============================");
     print("Hacked servers so far: " + hackedServers.length);
     print("Starting a new loop...");
