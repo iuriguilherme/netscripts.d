@@ -17,7 +17,6 @@
 target = getHostname();
 
 filesDownloaded = 0;
-filesDownloaded = 0;
 foundServers = [];
 servers = [];
 servers.push(target);
@@ -48,6 +47,7 @@ while (servers.length > 0) {
                         "..."
                     );
                     scp(files[i], server, target);
+                    filesDownloaded++;
                 }
             }
         } else tprint(server + " is not rooted, skipping...");

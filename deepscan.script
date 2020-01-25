@@ -13,27 +13,27 @@
     network, but you may use this script as a base to do other things.
 */
 
-foundServers = [];
+allServers = [];
 servers = [];
 whoami = getHostname();
 servers.push(whoami);
 
 while (servers.length > 0) {
     server = servers.pop();
-    if (!foundServers.includes(server)) {
+    if (!allServers.includes(server)) {
         tprint("--------------------------------" +
             "-------------------------------");
-        foundServers.push(server);
+        allServers.push(server);
         tprint("Will now scan " + server);
         nextServers = scan(server);
         for (i = 0; i < nextServers.length; ++i) {
-            if (!foundServers.includes(nextServers[i])) {
+            if (!allServers.includes(nextServers[i])) {
                 tprint(
                     "++found " +
                     nextServers[i] +
                     " connected to " +
                     server +
-                    ", adding to servers"
+                    ", adding to servers list."
                 );
                 servers.push(nextServers[i]);
             } else {
@@ -42,8 +42,8 @@ while (servers.length > 0) {
                     nextServers[i] +
                     " connected to " +
                     server +
-                    ", but it's already on foundServers" +
-                    ", not adding to servers."
+                    ", but it's already on allServers" +
+                    ", not adding to servers list."
                 );
             }
         }
@@ -54,5 +54,5 @@ tprint("================================" +
     "===============================");
 tprint(
     "Full list of servers found in the network:" +
-    foundServers.join(', ')
+    allServers.join(', ')
 );

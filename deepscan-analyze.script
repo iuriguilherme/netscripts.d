@@ -1,54 +1,112 @@
 /*
-    deepscan-analyze.script
-    for bitburner version: 0.35.1
+    deepscan.script for Bitburner v0.47.2
+    Winners don't use copyright
+    
+    Latest version of this script should be at
+        https://github.com/iuriguilherme/netscripts.d
+    Bitburner should be at https://github.com/danielyxie/bitburner
+    
+    This script requires 1.85 GB of RAM to run for 1 thread(s)
 
-    winners don't use copyright
-    last version of this script should be at https://github.com/desci/netscripts.d
-
-    This script displays information on all servers in the network
-    All information is printed in the terminal
-    This is not equivalent to running `analyze` or `scan-analyze` on every server, it only uses netscript readily available functions. Some features from `analyze` may be missing, however there may be other features not present on `analyze` or `scan-analyze`.
+    This script displays information on all scannable servers in the 
+    network. All information is printed in the terminal.
+    This is not equivalent to running `analyze` or `scan-analyze` on 
+    every server, it only uses netscript readily available functions. 
+    Some features from `analyze` may be missing, however there may be 
+    other features not present on `analyze` or `scan-analyze`.
 */
 
-foundnodes = [];
-stack = [];
-origin = getHostname();
-stack.push(origin);
+allServers = [];
+servers = [];
+whoami = getHostname();
+servers.push(whoami);
 
-while(stack.length > 0) {
-    node = stack.pop();
-    if (! foundnodes.includes(node)) {
-        tprint("----------------------------------------");
-        tprint("Analyzing " + node + "...");
+while (servers.length > 0) {
+    server = servers.pop();
+    if (!allServers.includes(server)) {
+        tprint("--------------------------------" +
+            "-------------------------------");
+        allServers.push(server);
+        tprint("Analyzing " + server + "...");
         tprint("\n");
-        tprint("Root Access: " + hasRootAccess(node) + ", Required hacking skill: " + getServerRequiredHackingLevel(node));
-        tprint("Required number of open ports for NUKE: " + getServerNumPortsRequired(node));
+        tprint(
+            "Root Access: " +
+            hasRootAccess(server) +
+            ", Required hacking skill: " +
+             getServerRequiredHackingLevel(server)
+        );
+        tprint(
+            "Required number of open ports for NUKE: " +
+            getServerNumPortsRequired(server)
+        );
         //TODO Implement this, source: https://github.com/danielyxie/bitburner/blob/99d774cf5a6a1d94a1eb463dc21205c14c2ceefc/src/NetscriptEvaluator.js#L875https://github.com/danielyxie/bitburner/blob/99d774cf5a6a1d94a1eb463dc21205c14c2ceefc/src/NetscriptEvaluator.js#L875
         //tprint("Estimated chance to hack: " + "0%");
         tprint("\n");
         tprint("Estimated time to run");
-        tprint("--hack: " + getHackTime(node) + " seconds");
-        tprint("--grow: " + getGrowTime(node) + " seconds");
-        tprint("--weaken: " + getWeakenTime(node) + " seconds");
+        tprint("==hack: " + getHackTime(server) + " seconds");
+        tprint("==grow: " + getGrowTime(server) + " seconds");
+        tprint("==weaken: " + getWeakenTime(server) + " seconds");
         tprint("\n");
-        tprint("RAM: " + getServerRam(node)[0] + "GB total / " + getServerRam(node)[1] + "GB used / " + (getServerRam(node)[0]-getServerRam(node)[1]) + "GB available");
+        serverRam = getServerRam(server)
+        tprint(
+            "RAM: " +
+            serverRam[0] +
+            "GB total / " +
+            serverRam[1] +
+            "GB used / " +
+            (serverRam[0] - serverRam[1]) +
+            "GB available"
+        );
         tprint("\n");
-        tprint("Server security level: " + getServerSecurityLevel(node) + " (" + getServerBaseSecurityLevel(node) + " base, " + getServerMinSecurityLevel(node) + " minimum)");
+        tprint(
+            "Server security level: " +
+            getServerSecurityLevel(server) +
+            " (" +
+            getServerBaseSecurityLevel(server) +
+            " base, " +
+            getServerMinSecurityLevel(server) +
+            " minimum)"
+        );
         tprint("\n");
         //TODO format the total money
-        tprint("Estimated total money available on server: $" + getServerMoneyAvailable(node));
-        tprint("Money growth parameter: " +  getServerGrowth(node));
+        tprint(
+            "Estimated total money available on server: $" +
+            getServerMoneyAvailable(server)
+        );
+        tprint("Money growth parameter: " +  getServerGrowth(server));
         tprint("\n");
-        tprint("List of files found on " + node + ": " + ls(node));
+        tprint("List of files found on " + server + ": " + ls(server));
         tprint("\n");
 
-        foundnodes.push(node);
-        tprint("Will now scan " + node + " for connected servers...");
-        nextNodes = scan(node);
-        for (i = 0; i < nextNodes.length; ++i) {
-            tprint("--found " + nextNodes[i] + " connected to " + node + ", adding to stack");
-            stack.push(nextNodes[i]);
+        tprint("Will now scan " + server + " for connected servers...");
+        nextServers = scan(server);
+        for (i = 0; i < nextServers.length; ++i) {
+            if (!foundServers.includes(nextServers[i])) {
+                tprint(
+                    "++found " +
+                    nextServers[i] +
+                    " connected to " +
+                    server +
+                    ", adding to servers list"
+                );
+                servers.push(nextServers[i]);
+            } else {
+                tprint(
+                    "--found " +
+                    nextServers[i] +
+                    " connected to " +
+                    server +
+                    ", but it's already on foundServers" +
+                    ", not adding to servers."
+                );
+            }
         }
     }
 }
 
+tprint("================================" +
+    "===============================");
+tprint(
+    "Full list of servers found in the network:" +
+    allServers.join(', ')
+);
